@@ -5,6 +5,7 @@ Main BerryOximeter class implementation
 import asyncio
 import csv
 import os
+import threading
 from datetime import datetime
 from typing import Optional, Callable, List
 from uuid import UUID
@@ -46,7 +47,8 @@ class BerryOximeter:
 
         # Event loop handling
         self._loop: Optional[asyncio.AbstractEventLoop] = None
-        self._connection_task: Optional[asyncio.Task] = None
+        self._thread: Optional[threading.Thread] = None
+        self._stop_event = threading.Event()
 
     @property
     def is_connected(self) -> bool:
@@ -61,13 +63,55 @@ class BerryOximeter:
             device_address: Optional specific device address. If None, finds first available.
             timeout: Connection timeout in seconds
         """
-        asyncio.run(self._connect_async(device_address, timeout))
-
-    async def _connect_async(self, device_address: Optional[str], timeout: float):
-        """Async connection implementation"""
         if self.is_connected:
             return
 
+        # Create event loop in separate thread
+        self._stop_event.clear()
+        self._thread = threading.Thread(
+            target=self._run_event_loop, args=(device_address, timeout)
+        )
+        self._thread.start()
+
+        # Wait for connection
+        start_time = (
+            asyncio.get_event_loop().time()
+            if asyncio.get_event_loop().is_running()
+            else 0
+        )
+        while not self.is_connected and self._thread.is_alive():
+            if start_time and asyncio.get_event_loop().time() - start_time > timeout:
+                self.disconnect()
+                raise ConnectionError("Connection timeout")
+            threading.Event().wait(0.1)
+
+    def _run_event_loop(self, device_address: Optional[str], timeout: float):
+        """Run event loop in separate thread"""
+        self._loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(self._loop)
+
+        try:
+            self._loop.run_until_complete(
+                self._connect_and_run(device_address, timeout)
+            )
+        except Exception as e:
+            print(f"Event loop error: {e}")
+        finally:
+            self._loop.close()
+
+    async def _connect_and_run(self, device_address: Optional[str], timeout: float):
+        """Connect and run until stop event is set"""
+        await self._connect_async(device_address, timeout)
+
+        # Keep running until stop event is set
+        while not self._stop_event.is_set():
+            await asyncio.sleep(0.1)
+
+        # Disconnect when stopping
+        await self._disconnect_async()
+
+    async def _connect_async(self, device_address: Optional[str], timeout: float):
+        """Async connection implementation"""
         # Find the device if no address provided
         if device_address is None:
             print(f"Searching for {DEVICE_NAME}...")
@@ -102,16 +146,23 @@ class BerryOximeter:
 
     def disconnect(self):
         """Disconnect from the device"""
-        if self._client:
-            asyncio.run(self._disconnect_async())
+        if self._thread and self._thread.is_alive():
+            self._stop_event.set()
+            self._thread.join(timeout=5.0)
+
+        self._client = None
+        self._device_address = None
+        self._loop = None
+        self._thread = None
 
     async def _disconnect_async(self):
         """Async disconnection implementation"""
         if self._client and self._client.is_connected:
-            await self._client.stop_notify(RECEIVE_CHARACTERISTIC)
-            await self._client.disconnect()
-        self._client = None
-        self._device_address = None
+            try:
+                await self._client.stop_notify(RECEIVE_CHARACTERISTIC)
+                await self._client.disconnect()
+            except Exception as e:
+                print(f"Disconnect error: {e}")
 
     def start_streaming(self, callback: Callable[[OximeterReading], None]):
         """
@@ -145,16 +196,14 @@ class BerryOximeter:
         if not self.is_connected:
             raise ConnectionError("Not connected to device")
 
-        return asyncio.run(self._get_reading_async(timeout))
+        import time
 
-    async def _get_reading_async(self, timeout: float) -> OximeterReading:
-        """Async implementation of get_reading"""
-        start_time = asyncio.get_event_loop().time()
+        start_time = time.time()
 
-        while asyncio.get_event_loop().time() - start_time < timeout:
+        while time.time() - start_time < timeout:
             if self._latest_reading is not None:
                 return self._latest_reading
-            await asyncio.sleep(0.1)
+            time.sleep(0.1)
 
         raise NoDataError(f"No reading received within {timeout} seconds")
 
@@ -171,16 +220,12 @@ class BerryOximeter:
         if not self.is_connected:
             raise ConnectionError("Not connected to device")
 
-        return asyncio.run(self._get_readings_async(duration_seconds))
+        import time
 
-    async def _get_readings_async(
-        self, duration_seconds: float
-    ) -> List[OximeterReading]:
-        """Async implementation of get_readings"""
         self._collected_readings = []
         self._is_collecting = True
 
-        await asyncio.sleep(duration_seconds)
+        time.sleep(duration_seconds)
 
         self._is_collecting = False
         return self._collected_readings.copy()
@@ -269,7 +314,10 @@ class BerryOximeter:
 
             # Stream to callback
             if self._streaming_callback:
-                self._streaming_callback(reading)
+                try:
+                    self._streaming_callback(reading)
+                except Exception as e:
+                    print(f"Callback error: {e}")
 
             # Log to console
             if self._console_logging:
