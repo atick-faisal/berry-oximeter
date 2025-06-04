@@ -1,0 +1,21 @@
+[project]
+name = "berry-oximeter"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Atick Faisal", email = "atickfaisal@gmail.com" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "bleak>=0.22.3",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = [
+    "ruff>=0.11.12",
+]
