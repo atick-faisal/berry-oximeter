@@ -8,7 +8,7 @@ from .exceptions import DeviceNotFoundError, ConnectionError, NoDataError
 from .models import OximeterReading
 
 
-__version__ = "0.0.1"
+__version__ = "0.0.3"
 __app_name__ = "berry-oximeter"
 __all__ = [
     "BerryOximeter",
