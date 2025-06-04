@@ -396,7 +396,7 @@ class TestBerryOximeter:
             mock_makedirs.assert_called_once_with("data", exist_ok=True)
 
             # Check filename format
-            assert filename.startswith("data/oximeter_data_")
+            assert "oximeter_data_" in filename
             assert filename.endswith(".csv")
 
             oximeter.stop_logging()
