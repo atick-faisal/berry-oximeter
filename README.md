@@ -296,7 +296,6 @@ an issue first to discuss what you would like to change.
 
 - Thanks to the [Bleak](https://github.com/hbldh/bleak) project for the excellent BLE library
 - Inspired by the need for simple, reliable pulse oximeter data collection in research settings
-- 
 
 <p align="center"><img src="https://raw.githubusercontent.com/catppuccin/catppuccin/main/assets/footers/gray0_ctp_on_line.svg?sanitize=true" /></p>
 <p align="center"><a href="https://sites.google.com/view/mchowdhury" target="_blank">Qatar University Machine Learning Group</a>

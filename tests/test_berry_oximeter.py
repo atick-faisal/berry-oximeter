@@ -3,17 +3,14 @@ Test cases for Berry Oximeter library
 These tests focus on unit testing without requiring actual hardware
 """
 
-import pytest
-import asyncio
 from datetime import datetime
-from unittest.mock import Mock, patch, MagicMock, AsyncMock, mock_open
-import csv
-import os
+from unittest.mock import Mock, patch, AsyncMock, mock_open
+
+import pytest
 
 from berry_oximeter import (
     BerryOximeter,
     OximeterReading,
-    DeviceNotFoundError,
     ConnectionError,
     NoDataError,
 )
@@ -325,7 +322,6 @@ class TestBerryOximeter:
 
         # Get the mock writer
         handle = mock_file()
-        write_calls = handle.write.call_args_list
 
         # Stop logging
         stopped_filename = oximeter.stop_logging()
@@ -390,7 +386,7 @@ class TestBerryOximeter:
     def test_auto_filename_generation(self):
         """Test automatic filename generation for logging"""
         with (
-            patch("berry_oximeter.oximeter.open", new_callable=mock_open) as mock_file,
+            patch("berry_oximeter.oximeter.open", new_callable=mock_open),
             patch("os.makedirs") as mock_makedirs,
         ):
             oximeter = BerryOximeter()
