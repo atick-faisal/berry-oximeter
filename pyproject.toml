@@ -1,21 +1,67 @@
 [project]
 name = "berry-oximeter"
-version = "0.1.0"
-description = "Add your description here"
+dynamic = ["version"]
+description = "Python library for Berry Pulse Oximeter data collection via Bluetooth LE"
 readme = "README.md"
 authors = [
     { name = "Atick Faisal", email = "atickfaisal@gmail.com" }
 ]
-requires-python = ">=3.13"
+maintainers = [
+    { name = "Atick Faisal", email = "atickfaisal@gmail.com" }
+]
+license = "MIT"
+license-files = ["LICEN[CS]E.*"]
+requires-python = ">=3.10"
+keywords = ["oximeter", "pulse", "spo2", "bluetooth", "ble", "berry", "medical", "health"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Healthcare Industry",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Scientific/Engineering :: Medical Science Apps.",
+]
 dependencies = [
     "bleak>=0.22.3",
 ]
+
+[project.urls]
+Homepage = "https://github.com/atick-faisal/berry-oximeter"
+Documentation = "https://github.com/atick-faisal/berry-oximeter"
+Repository = "https://github.com/atick-faisal/berry-oximeter"
+"Bug Tracker" = "https://github.com/atick-faisal/berry-oximeter/issues"
+Changelog = "https://github.com/atick-faisal/berry-oximeter/blob/main/CHANGELOG.md"
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
+[tool.hatch.build.targets.wheel]
+packages = ["src/berry_oximeter"]
+
+[tool.hatch.envs.test]
+dependencies = [
+    "pytest",
+    "pytest-cov",
+]
+
+[tool.hatch.version]
+path = "src/berry_oximeter/__init__.py"
+
+[[tool.hatch.envs.hatch-test.matrix]]
+python = ["3.12", "3.11", "3.10"]
+
 [dependency-groups]
 dev = [
-    "ruff>=0.11.12",
+    "mkdocs>=1.6.1",
+    "mkdocs-github-admonitions-plugin>=0.0.3",
+    "mkdocs-material>=9.6.7",
+    "mkdocstrings-python>=1.16.5",
+    "pytest>=8.3.5",
+    "ruff>=0.9.10",
 ]
