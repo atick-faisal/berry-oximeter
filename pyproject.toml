@@ -58,6 +58,8 @@ python = ["3.12", "3.11", "3.10"]
 
 [dependency-groups]
 dev = [
+    "hatch>=1.14.1",
+    "hatchling>=1.27.0",
     "mkdocs>=1.6.1",
     "mkdocs-github-admonitions-plugin>=0.0.3",
     "mkdocs-material>=9.6.7",

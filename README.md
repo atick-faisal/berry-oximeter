@@ -1,6 +1,6 @@
 # Berry Oximeter 🫀
 
-![Banner](https://raw.githubusercontent.com/atick-faisal/berry-oximeter/main/assets/banner.png)
+![Banner](https://raw.githubusercontent.com/atick-faisal/berry-oximeter/main/docs/assets/banner.png)
 
 [![PyPI version](https://img.shields.io/badge/pypi-berry-oximeter.svg?colorA=363a4f&colorB=b7bdf8&style=for-the-badge)](https://badge.fury.io/py/berry-oximeter)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg?colorA=363a4f&colorB=f5a97f&style=for-the-badge)](https://www.python.org/downloads/)
@@ -8,6 +8,11 @@
 
 A simple Python library for real-time data collection from BerryMed pulse oximeters via Bluetooth
 LE. Get heart rate, SpO2, and perfusion index readings with just a few lines of code!
+
+
+> [!WARNING]
+> This library is for educational and research purposes only. It is not intended for medical diagnosis
+  or treatment. Always consult with a qualified healthcare provider for medical advice.
 
 ## Features ✨
 
@@ -269,7 +274,7 @@ This library is tested with:
 
 - BerryMed BM1000C
 - Other BerryMed pulse oximeters using
-  the [BCI protocol](https://raw.githubusercontent.com/atick-faisal/berry-oximeter/main/assets/BCI_protocol_v_1.2.pdf)
+  the [BCI protocol](https://raw.githubusercontent.com/atick-faisal/berry-oximeter/main/docs/assets/BCI_protocol_v_1.2.pdf)
 
 The library should work with any Berry device that:
 
@@ -291,11 +296,7 @@ an issue first to discuss what you would like to change.
 
 - Thanks to the [Bleak](https://github.com/hbldh/bleak) project for the excellent BLE library
 - Inspired by the need for simple, reliable pulse oximeter data collection in research settings
-
-## Disclaimer ⚠️
-
-This library is for educational and research purposes only. It is not intended for medical diagnosis
-or treatment. Always consult with a qualified healthcare provider for medical advice.
+- 
 
 <p align="center"><img src="https://raw.githubusercontent.com/catppuccin/catppuccin/main/assets/footers/gray0_ctp_on_line.svg?sanitize=true" /></p>
 <p align="center"><a href="https://sites.google.com/view/mchowdhury" target="_blank">Qatar University Machine Learning Group</a>

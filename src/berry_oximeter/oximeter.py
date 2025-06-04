@@ -6,6 +6,7 @@ import asyncio
 import csv
 import os
 import threading
+import time
 from datetime import datetime
 from typing import Optional, Callable, List
 from uuid import UUID
@@ -74,13 +75,9 @@ class BerryOximeter:
         self._thread.start()
 
         # Wait for connection
-        start_time = (
-            asyncio.get_event_loop().time()
-            if asyncio.get_event_loop().is_running()
-            else 0
-        )
+        start_time = time.time()
         while not self.is_connected and self._thread.is_alive():
-            if start_time and asyncio.get_event_loop().time() - start_time > timeout:
+            if time.time() - start_time > timeout:
                 self.disconnect()
                 raise ConnectionError("Connection timeout")
             threading.Event().wait(0.1)

@@ -1,0 +1,37 @@
+name: 📑 Docs Workflow
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  docs:
+    name: 🗐 Document Code
+    runs-on: ubuntu-latest
+    steps:
+      - name: ⬇️ Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 📦 Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.12"
+
+      - name: 📥 Install Dependencies
+        run: uv sync --all-extras --dev
+
+      - name: 📂 Copy Repo Contents to Docs
+        run: |
+          cp README.md docs/index.md
+
+      - name: 📝 Run MKDocs
+        run: |
+          uv run mkdocs build
+          uv run mkdocs gh-deploy
+
+# https://github.com/softprops/action-gh-release/issues/236
+permissions:
+  contents: write
